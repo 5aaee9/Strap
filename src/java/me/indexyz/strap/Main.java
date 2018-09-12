@@ -7,11 +7,12 @@ import me.indexyz.strap.utils.$;
 
 public class Main {
     public static void main(String[] args) {
-        Bot bot = Bot.create("663045071:AAHi-GZU-AoYLMX9HjOA1SfQsPCFIcH3Ikk");
+        Bot bot = Bot.create("");
 
         System.out.println($.getAnnotations(Events.class).size());
         System.out.println($.getMethods(Command.class).size());
 
+        bot.start();
         System.out.println("Hello, World!");
     }
 }

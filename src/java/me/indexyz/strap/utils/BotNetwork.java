@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import me.indexyz.strap.object.Update;
 import net.dongliu.requests.Header;
 import net.dongliu.requests.Requests;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -34,27 +35,26 @@ public class BotNetwork {
         return this.gson;
     }
 
-    public JSONObject createReq(String path, JSONObject body) {
+    public String createReq(String path, JSONObject body) {
         String data = Requests.post(getRequestUrl(path))
                 .body(body.toString())
                 .headers(new Header("Content-Type", "application/json"))
                 .send()
                 .readToText();
         JSONObject object = new JSONObject(data);
-
         if (!object.getBoolean("ok")) {
             // throw exceptions
         }
-        return object.getJSONObject("result");
+        return object.get("result").toString();
     }
 
     public ArrayList<Update> getUpdates() {
-        JSONObject resp = createReq("/getUpdates", new JSONObject());
+        JSONArray resp = new JSONArray(createReq("/getUpdates", new JSONObject()));
         Gson gson = this.getGson();
 
         ArrayList<Update> returnList = Lists.newArrayList();
 
-        resp.getJSONArray("").forEach(item -> {
+        resp.forEach(item -> {
             returnList.add(gson.fromJson(item.toString(), Update.class));
         });
 
