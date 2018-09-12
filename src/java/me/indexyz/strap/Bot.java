@@ -5,10 +5,10 @@ import me.indexyz.strap.annotations.Events;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.$;
 import me.indexyz.strap.utils.BotNetwork;
-import net.dongliu.requests.Methods;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class Bot {
@@ -45,30 +45,36 @@ public class Bot {
     public void start() {
         // Start pulling message
         this.enabled = true;
-        while (this.enabled) {
-            // Pulling interval
-            List<Update> updates = this.network.getUpdates();
+        long lastUpdateId = 0;
 
-            updates.stream()
-                .filter(i -> i.message != null)
-                .filter(i -> i.message.text.startsWith("/"))
-                .forEach(update -> {
-                    List<Method> methods = $.getMethods(classCache, Command.class);
-                    methods.stream().forEach(method -> {
-                        Command command = method.getAnnotation(Command.class);
-                        if (!update.message.text.startsWith(command.value())) {
-                            return;
-                        }
-                        try {
-                            method.invoke(null, update, this.network);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                });
+        while (this.enabled) {
             try {
+                // Pulling interval
+                System.out.println(lastUpdateId);
+                List<Update> updates = this.network.getUpdates(lastUpdateId);
+                if (updates.size() != 0) {
+                    lastUpdateId = updates.get(updates.size() - 1).update_id + 1;
+                }
+
+                updates.stream()
+                    .filter(i -> i.message != null)
+                    .filter(i -> i.message.text.startsWith("/"))
+                    .forEach(update -> {
+                        List<Method> methods = $.getMethods(classCache, Command.class);
+                        methods.stream().forEach(method -> {
+                            Command command = method.getAnnotation(Command.class);
+                            if (!update.message.text.startsWith(command.value())) {
+                                return;
+                            }
+                            try {
+                                method.invoke(null, update, this.network);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    });
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
