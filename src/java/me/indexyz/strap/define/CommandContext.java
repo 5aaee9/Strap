@@ -5,8 +5,6 @@ import me.indexyz.strap.utils.BotNetwork;
 
 import java.util.List;
 
-public class CommandContext implements AbstractContext {
-    public BotNetwork network;
+public class CommandContext extends AbstractContext {
     public List<String> args = null;
-    public Update update;
 }

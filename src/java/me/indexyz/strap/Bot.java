@@ -1,23 +1,17 @@
 package me.indexyz.strap;
 
-import me.indexyz.strap.annotations.Command;
-import me.indexyz.strap.annotations.Events;
-import me.indexyz.strap.define.AbstractContext;
-import me.indexyz.strap.define.CommandContext;
+import me.indexyz.strap.define.UserEventsKind;
 import me.indexyz.strap.object.Update;
-import me.indexyz.strap.utils.$;
 import me.indexyz.strap.utils.BotNetwork;
+import me.indexyz.strap.utils.UpdateExec;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.List;
 
 public class Bot {
     private BotNetwork network;
     private Boolean enabled;
     private static Bot instance;
+    private UpdateExec execer;
 
     private Bot() {
     }
@@ -32,7 +26,7 @@ public class Bot {
 
     public void init(String token) {
         this.network = new BotNetwork(token);
-        this.classCache = $.<Events>getAnnotations(Events.class);
+        this.execer = new UpdateExec(this.network);
     }
 
     public static Bot create(String token) {
@@ -45,7 +39,6 @@ public class Bot {
         this.enabled = enabled;
     }
 
-    private static List<Class<Events>> classCache;
 
     public void start() {
         // Start pulling message
@@ -73,34 +66,12 @@ public class Bot {
     }
 
     private void execUpdate(Update update) {
-        if (update.message != null && update.message.text.startsWith("/")) {
-            this.execCommandUpdate(update);
+        if (update.message != null && update.message.text != null && update.message.text.startsWith("/")) {
+            this.execer.execCommandUpdate(update);
         }
-    }
 
-    private void execCommandUpdate(Update update) {
-        List<Method> methods = $.getMethods(classCache, Command.class);
-        for (Method method: methods) {
-            try {
-                Command command = method.getAnnotation(Command.class);
-                CommandContext context = new CommandContext();
-                context.network = this.network;
-                context.update = update;
-
-                if (update.message.text.startsWith("/" + command.value())) {
-                    if (command.parseArgs()) {
-                        List<String> args = Arrays.asList(update.message.text.split(" "));
-
-                        if (args.size() > 1) {
-                            context.args = args.subList(1, args.size());
-                        }
-                    }
-
-                    method.invoke(null, context);
-                }
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
+        if (update.message != null && update.message.new_chat_members != null) {
+            this.execer.execUserEvent(update, UserEventsKind.JOINED_CHAT);
         }
     }
 }

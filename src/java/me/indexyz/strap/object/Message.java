@@ -1,5 +1,7 @@
 package me.indexyz.strap.object;
 
+import java.util.List;
+
 public class Message {
     public long message_id;
 
@@ -18,4 +20,6 @@ public class Message {
     public int edit_date;
     public String media_group_id;
     public String author_signature;
+
+    public List<User> new_chat_members;
 }
