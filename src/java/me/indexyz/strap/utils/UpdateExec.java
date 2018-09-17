@@ -3,6 +3,7 @@ package me.indexyz.strap.utils;
 import me.indexyz.strap.annotations.Command;
 import me.indexyz.strap.annotations.Events;
 import me.indexyz.strap.annotations.UserEvents;
+import me.indexyz.strap.define.ChatType;
 import me.indexyz.strap.define.CommandContext;
 import me.indexyz.strap.define.UserEventContext;
 import me.indexyz.strap.define.UserEventsKind;
@@ -30,6 +31,11 @@ public class UpdateExec {
                 CommandContext context = new CommandContext();
                 context.network = this.network;
                 context.update = update;
+
+                // not response in group
+                if (!command.responseInGroup() && !update.message.chat.type.equals(ChatType.PRIVATE)) {
+                    continue;
+                }
 
                 if (update.message.text.startsWith("/" + command.value())) {
                     if (command.parseArgs()) {
