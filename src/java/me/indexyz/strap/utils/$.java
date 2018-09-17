@@ -39,18 +39,18 @@ public class $ {
     @SuppressWarnings("unchecked")
     public static <T> List<Class<T>> getAnnotations(Class<? extends Annotation> annotation) {
         return $.getInfos().stream()
-                .map(ClassPath.ClassInfo::load)
-                .filter(i -> i.isAnnotationPresent(annotation) && (!i.equals(annotation)))
-                .map(i -> (Class<T>) i)
-                .collect(Collectors.toList());
+            .map(ClassPath.ClassInfo::load)
+            .filter(i -> i.isAnnotationPresent(annotation) && (!i.equals(annotation)))
+            .map(i -> (Class<T>) i)
+            .collect(Collectors.toList());
     }
 
     public static <T> List<Method> getMethods(Class<? extends Annotation> annotation) {
         return getMethods(
-                $.getInfos().stream().map(ClassPath.ClassInfo::load)
-                        .map(i -> ((Class<T>) i))
-                        .collect(Collectors.toList()),
-                annotation
+            $.getInfos().stream().map(ClassPath.ClassInfo::load)
+                .map(i -> ((Class<T>) i))
+                .collect(Collectors.toList()),
+            annotation
         );
     }
 

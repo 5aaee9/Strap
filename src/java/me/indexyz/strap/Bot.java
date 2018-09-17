@@ -2,6 +2,8 @@ package me.indexyz.strap;
 
 import me.indexyz.strap.annotations.Command;
 import me.indexyz.strap.annotations.Events;
+import me.indexyz.strap.define.AbstractContext;
+import me.indexyz.strap.define.CommandContext;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.$;
 import me.indexyz.strap.utils.BotNetwork;
@@ -58,39 +60,45 @@ public class Bot {
                 }
 
                 updates.stream()
-                        .filter(i -> i.message != null)
-                        .filter(i -> i.message.text.startsWith("/"))
-                        .forEach(update -> {
-                            List<Method> methods = $.getMethods(classCache, Command.class);
-                            methods.stream().forEach(method -> {
-                                Command command = method.getAnnotation(Command.class);
-                                if (!update.message.text.startsWith(command.value())) {
-                                    return;
-                                }
-                                new Thread(() -> {
-                                    try {
-                                        if (command.parseArgs()) {
-                                            List<String> args = Arrays.asList(update.message.text.split(" "));
-
-                                            if (args.size() > 1) {
-                                                args = args.subList(1, args.size());
-                                            } else {
-                                                args = null;
-                                            }
-
-                                            method.invoke(null, update, this.network, args);
-                                        } else {
-                                            method.invoke(null, update, this.network);
-                                        }
-
-                                    } catch (IllegalAccessException | InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
-                                }).start();
-                            });
-                        });
+                    .forEach(update -> {
+                        new Thread(() -> {
+                            this.execUpdate(update);
+                        }).start();
+                    });
                 Thread.sleep(1000);
             } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void execUpdate(Update update) {
+        if (update.message != null && update.message.text.startsWith("/")) {
+            this.execCommandUpdate(update);
+        }
+    }
+
+    private void execCommandUpdate(Update update) {
+        List<Method> methods = $.getMethods(classCache, Command.class);
+        for (Method method: methods) {
+            try {
+                Command command = method.getAnnotation(Command.class);
+                CommandContext context = new CommandContext();
+                context.network = this.network;
+                context.update = update;
+
+                if (update.message.text.startsWith("/" + command.value())) {
+                    if (command.parseArgs()) {
+                        List<String> args = Arrays.asList(update.message.text.split(" "));
+
+                        if (args.size() > 1) {
+                            context.args = args.subList(1, args.size());
+                        }
+                    }
+
+                    method.invoke(null, context);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
