@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import me.indexyz.strap.object.Message;
 import me.indexyz.strap.object.Update;
-import net.dongliu.requests.Header;
-import net.dongliu.requests.Requests;
-import org.json.JSONArray;
+import okhttp3.*;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class BotNetwork {
@@ -35,13 +34,25 @@ public class BotNetwork {
         return this.gson;
     }
 
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+    public static final String ERROR_RESPONSE = "{\"ok\": false}";
+
     public String sendReq(String path, JSONObject body) {
-        String data = Requests.post(getRequestUrl(path))
-                .body(body.toString())
-                .headers(new Header("Content-Type", "application/json"))
-                .send()
-                .readToText();
-        return data;
+        Request request = new Request.Builder()
+                .url(getRequestUrl(path))
+                .header("Content-Type", "application/json")
+                .post(RequestBody.create(JSON, body.toString()))
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ERROR_RESPONSE;
+        }
     }
 
     @Nullable
