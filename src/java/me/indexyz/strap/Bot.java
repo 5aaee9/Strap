@@ -4,6 +4,8 @@ import me.indexyz.strap.define.UserEventsKind;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.BotNetwork;
 import me.indexyz.strap.utils.UpdateExec;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -12,9 +14,9 @@ public class Bot {
     private Boolean enabled;
     private static Bot instance;
     private UpdateExec execer;
+    public static final Logger logger = LogManager.getLogger(Bot.class);
 
-    private Bot() {
-    }
+    private Bot() { }
 
     public static Bot get() {
         if (Bot.instance == null) {
@@ -48,6 +50,12 @@ public class Bot {
         while (this.enabled) {
             try {
                 List<Update> updates = this.network.getUpdates(lastUpdateId);
+                if (updates == null) {
+                    logger.error("Unable to get updates, check your token.");
+                    Thread.sleep(1000);
+                    continue;
+                }
+
                 if (updates.size() != 0) {
                     lastUpdateId = updates.get(updates.size() - 1).update_id + 1;
                 }

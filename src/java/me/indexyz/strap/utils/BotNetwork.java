@@ -35,32 +35,29 @@ public class BotNetwork {
         return this.gson;
     }
 
-    @Nullable
     public String sendReq(String path, JSONObject body) {
         String data = Requests.post(getRequestUrl(path))
                 .body(body.toString())
                 .headers(new Header("Content-Type", "application/json"))
                 .send()
                 .readToText();
-        JSONObject object = new JSONObject(data);
-        if (!object.getBoolean("ok")) {
-            return null;
-        }
-        return object.get("result").toString();
+        return data;
     }
 
+    @Nullable
     public ArrayList<Update> getUpdates(long id) {
         String result = sendReq("/getUpdates", (new JSONObject()).put("offset", id));
-        if (result == null) {
-            return Lists.newArrayList();
+
+        JSONObject resp = new JSONObject(result);
+        if (!resp.getBoolean("ok")) {
+            return null;
         }
 
-        JSONArray resp = new JSONArray(result);
         Gson gson = this.getGson();
 
         ArrayList<Update> returnList = Lists.newArrayList();
 
-        resp.forEach(item -> {
+        resp.getJSONArray("result").forEach(item -> {
             System.out.println(item.toString());
             returnList.add(gson.fromJson(item.toString(), Update.class));
         });
@@ -77,8 +74,8 @@ public class BotNetwork {
         object.put("disable_notification", disableNotification);
         object.put("reply_to_message_id", replyToMessage_id);
 
-        String resp = sendReq("/sendMessage", object);
-        return this.getGson().fromJson(resp, Message.class);
+        JSONObject resp = new JSONObject(sendReq("/sendMessage", object));
+        return this.getGson().fromJson(resp.getJSONObject("result").toString(), Message.class);
     }
 
     public <T> Message sendMessage(T chatId, String text, String parseMode, boolean disableWebPagePreview, boolean disableNotification) {

@@ -9,13 +9,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class $ {
     private final static String[] DISABLE_CLASS_PREFIX = {
             "com.sun",
-            "java.lang"
+            "java.lang",
+            "com.fasterxml"
     };
 
     private static ArrayList<ClassPath.ClassInfo> getInfos() {
@@ -28,6 +30,7 @@ public class $ {
                         continue classLoop;
                     }
                 }
+
                 ret.add(info);
             }
         } catch (IOException e) {
@@ -39,7 +42,14 @@ public class $ {
     @SuppressWarnings("unchecked")
     public static <T> List<Class<T>> getAnnotations(Class<? extends Annotation> annotation) {
         return $.getInfos().stream()
-            .map(ClassPath.ClassInfo::load)
+            .map(it -> {
+                try {
+                    return it.load();
+                } catch (Throwable e) {
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
             .filter(i -> i.isAnnotationPresent(annotation) && (!i.equals(annotation)))
             .map(i -> (Class<T>) i)
             .collect(Collectors.toList());
