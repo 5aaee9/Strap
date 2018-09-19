@@ -28,7 +28,8 @@ public class TestClass {
     public static void welcomeMessage(UserEventContext context) {
         String username = context.update.message.new_chat_members.stream()
                 .map(u -> u.first_name)
-                .reduce("", (origin, name) -> origin + " " + name);
+                .reduce("", (origin, name) -> origin + " " + name)
+                .trim();
 
         context.network.sendMessage(context.update.message.chat.id, "Welcome " + username + " joined this group!");
     }

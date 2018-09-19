@@ -9,6 +9,7 @@ import net.dongliu.requests.Requests;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class BotNetwork {
@@ -34,6 +35,7 @@ public class BotNetwork {
         return this.gson;
     }
 
+    @Nullable
     public String sendReq(String path, JSONObject body) {
         String data = Requests.post(getRequestUrl(path))
                 .body(body.toString())
@@ -42,13 +44,18 @@ public class BotNetwork {
                 .readToText();
         JSONObject object = new JSONObject(data);
         if (!object.getBoolean("ok")) {
-            // throw exceptions
+            return null;
         }
         return object.get("result").toString();
     }
 
     public ArrayList<Update> getUpdates(long id) {
-        JSONArray resp = new JSONArray(sendReq("/getUpdates", (new JSONObject()).put("offset", id)));
+        String result = sendReq("/getUpdates", (new JSONObject()).put("offset", id));
+        if (result == null) {
+            return Lists.newArrayList();
+        }
+
+        JSONArray resp = new JSONArray(result);
         Gson gson = this.getGson();
 
         ArrayList<Update> returnList = Lists.newArrayList();
@@ -70,7 +77,6 @@ public class BotNetwork {
         object.put("disable_notification", disableNotification);
         object.put("reply_to_message_id", replyToMessage_id);
 
-
         String resp = sendReq("/sendMessage", object);
         return this.getGson().fromJson(resp, Message.class);
     }
@@ -89,5 +95,26 @@ public class BotNetwork {
 
     public <T> Message sendMessage(T chatId, String text) {
         return sendMessage(chatId, text, "Markdown", false, false, null);
+    }
+
+    public <T> void kickChatMe(T chatId, long userId, long untilDate) {
+        JSONObject object = new JSONObject();
+        object.put("chat_id", chatId);
+        object.put("user_id", userId);
+        object.put("until_date", untilDate);
+
+        sendReq("/kickChatMember", object);
+    }
+
+    public <T> void kickChatMe(T chatId, long userId) {
+        kickChatMe(chatId, userId, 0);
+    }
+
+    public <T> void unbanChatMember(T chatId, long userId) {
+        JSONObject object = new JSONObject();
+        object.put("chat_id", chatId);
+        object.put("user_id", userId);
+
+        sendReq("/unbanChatMember", object);
     }
 }

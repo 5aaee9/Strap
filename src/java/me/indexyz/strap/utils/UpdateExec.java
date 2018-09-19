@@ -19,7 +19,7 @@ public class UpdateExec {
     private BotNetwork network;
 
     public UpdateExec(BotNetwork network) {
-        classCache = $.<Events>getAnnotations(Events.class);
+        classCache = $.getAnnotations(Events.class);
         this.network = network;
     }
 
