@@ -7,6 +7,8 @@ import me.indexyz.strap.define.CommandContext;
 import me.indexyz.strap.define.UserEventContext;
 import me.indexyz.strap.define.UserEventsKind;
 
+import java.util.Random;
+
 @Events
 public class TestClass {
     @Command("start")
@@ -32,5 +34,13 @@ public class TestClass {
                 .trim();
 
         context.network.sendMessage(context.update.message.chat.id, "Welcome " + username + " joined this group!");
+    }
+
+    @Command("prpr")
+    public static void prpr(CommandContext context) {
+        String[] values = new String[]{
+                "⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄", "(≧ ﹏ ≦)", "(*/ω＼*)", "ヽ(*。>Д<)o゜", "(つ ﹏ ⊂)", "( >  < )"
+        };
+        context.network.sendMessage(context.update.message.chat.id, values[(new Random()).nextInt(values.length)]);
     }
 }
