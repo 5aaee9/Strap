@@ -2,6 +2,7 @@ package me.indexyz.strap.utils;
 
 import me.indexyz.strap.annotations.Command;
 import me.indexyz.strap.annotations.Events;
+import me.indexyz.strap.annotations.OnInit;
 import me.indexyz.strap.annotations.UserEvents;
 import me.indexyz.strap.define.ChatType;
 import me.indexyz.strap.define.CommandContext;
@@ -21,6 +22,17 @@ public class UpdateExec {
     public UpdateExec(BotNetwork network) {
         classCache = $.getAnnotations(Events.class);
         this.network = network;
+        this.onInit();
+    }
+
+    private void onInit() {
+        $.getMethods(classCache, OnInit.class).forEach(it -> {
+            try {
+                it.invoke(null, this.network);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void execCommandUpdate(Update update) {

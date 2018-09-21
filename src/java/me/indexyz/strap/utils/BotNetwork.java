@@ -8,7 +8,10 @@ import okhttp3.*;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class BotNetwork {
@@ -38,11 +41,11 @@ public class BotNetwork {
             = MediaType.parse("application/json; charset=utf-8");
     public static final String ERROR_RESPONSE = "{\"ok\": false}";
 
-    public String sendReq(String path, JSONObject body) {
+    public String sendReq(String path, RequestBody body) {
         Request request = new Request.Builder()
                 .url(getRequestUrl(path))
                 .header("Content-Type", "application/json")
-                .post(RequestBody.create(JSON, body.toString()))
+                .post(body)
                 .build();
 
         OkHttpClient client = new OkHttpClient();
@@ -57,7 +60,7 @@ public class BotNetwork {
 
     @Nullable
     public ArrayList<Update> getUpdates(long id) {
-        String result = sendReq("/getUpdates", (new JSONObject()).put("offset", id));
+        String result = sendReq("/getUpdates", createFromJson((new JSONObject()).put("offset", id)));
 
         JSONObject resp = new JSONObject(result);
         if (!resp.getBoolean("ok")) {
@@ -76,6 +79,10 @@ public class BotNetwork {
         return returnList;
     }
 
+    private RequestBody createFromJson(JSONObject json) {
+        return RequestBody.create(JSON, json.toString());
+    }
+
     public <T> Message sendMessage(T chatId, String text, String parseMode, boolean disableWebPagePreview, boolean disableNotification, Long replyToMessage_id) {
         JSONObject object = new JSONObject();
         object.put("chat_id", chatId);
@@ -85,7 +92,7 @@ public class BotNetwork {
         object.put("disable_notification", disableNotification);
         object.put("reply_to_message_id", replyToMessage_id);
 
-        JSONObject resp = new JSONObject(sendReq("/sendMessage", object));
+        JSONObject resp = new JSONObject(sendReq("/sendMessage", createFromJson(object)));
         return this.getGson().fromJson(resp.getJSONObject("result").toString(), Message.class);
     }
 
@@ -111,7 +118,7 @@ public class BotNetwork {
         object.put("user_id", userId);
         object.put("until_date", untilDate);
 
-        sendReq("/kickChatMember", object);
+        sendReq("/kickChatMember", createFromJson(object));
     }
 
     public <T> void kickChatMe(T chatId, long userId) {
@@ -123,6 +130,20 @@ public class BotNetwork {
         object.put("chat_id", chatId);
         object.put("user_id", userId);
 
-        sendReq("/unbanChatMember", object);
+        sendReq("/unbanChatMember", createFromJson(object));
     }
+
+    private String detectType(Path path) {
+        try {
+            return Files.probeContentType(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return "application/octet-stream";
+        }
+    }
+
+//    public Message sendDocument(String chatId, Path document, Path thumb, String caption, String parse_mode, ) {
+//        return null;
+//    }
 }

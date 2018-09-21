@@ -26,6 +26,10 @@ public class Bot {
         return Bot.instance;
     }
 
+    public BotNetwork getNetwork() {
+        return network;
+    }
+
     public void init(String token) {
         this.network = new BotNetwork(token);
         this.execer = new UpdateExec(this.network);
@@ -40,7 +44,6 @@ public class Bot {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-
 
     public void start() {
         // Start pulling message
