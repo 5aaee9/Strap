@@ -37,7 +37,7 @@ public class UpdateExec {
 
     public void execCommandUpdate(Update update) {
         List<Method> methods = $.getMethods(classCache, Command.class);
-        for (Method method: methods) {
+        for (Method method : methods) {
             try {
                 Command command = method.getAnnotation(Command.class);
                 CommandContext context = new CommandContext();
@@ -72,7 +72,7 @@ public class UpdateExec {
         context.update = update;
 
         List<Method> methods = $.getMethods(classCache, UserEvents.class);
-        for (Method method: methods) {
+        for (Method method : methods) {
             try {
                 UserEvents command = method.getAnnotation(UserEvents.class);
 

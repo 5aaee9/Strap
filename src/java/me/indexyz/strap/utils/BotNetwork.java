@@ -30,6 +30,7 @@ public class BotNetwork {
     }
 
     private Gson gson;
+
     private Gson getGson() {
         if (this.gson == null) {
             this.gson = new Gson();

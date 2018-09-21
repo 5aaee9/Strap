@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Command {
     String value();
+
     boolean parseArgs() default false;
+
     boolean responseInGroup() default true;
 }

@@ -16,7 +16,8 @@ public class Bot {
     private UpdateExec execer;
     public static final Logger logger = LogManager.getLogger(Bot.class);
 
-    private Bot() { }
+    private Bot() {
+    }
 
     public static Bot get() {
         if (Bot.instance == null) {
@@ -64,11 +65,11 @@ public class Bot {
                 }
 
                 updates.stream()
-                    .forEach(update -> {
-                        new Thread(() -> {
-                            this.execUpdate(update);
-                        }).start();
-                    });
+                        .forEach(update -> {
+                            new Thread(() -> {
+                                this.execUpdate(update);
+                            }).start();
+                        });
                 Thread.sleep(1000);
             } catch (Exception e) {
                 e.printStackTrace();
