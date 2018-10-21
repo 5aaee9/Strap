@@ -41,6 +41,7 @@ public class BotNetwork {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
     public static final String ERROR_RESPONSE = "{\"ok\": false}";
+    private static OkHttpClient client = new OkHttpClient();
 
     public String sendReq(String path, RequestBody body) {
         Request request = new Request.Builder()
@@ -49,7 +50,6 @@ public class BotNetwork {
                 .post(body)
                 .build();
 
-        OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(request).execute();
             return response.body().string();

@@ -47,7 +47,8 @@ public class UpdateExec {
     public void execCommandUpdate(Update update) {
         List<Method> methods = $.getMethods(classCache, Command.class);
 
-        CommandContext context = (CommandContext) this.createContext(update);
+        CommandContext context = new CommandContext();
+        context.copy(this.createContext(update));
 
         for (Method method : methods) {
             try {
@@ -76,7 +77,8 @@ public class UpdateExec {
     }
 
     public void execUserEvent(Update update, UserEventsKind kind) {
-        UserEventContext context = (UserEventContext) this.createContext(update);
+        UserEventContext context = new UserEventContext();
+        context.copy(this.createContext(update));
 
         List<Method> methods = $.getMethods(classCache, UserEvents.class);
         for (Method method : methods) {
@@ -93,8 +95,9 @@ public class UpdateExec {
     }
 
     public void execMessageEvent(Update update) {
-        MessageContext context = (MessageContext) this.createContext(update);
+        MessageContext context = new MessageContext();
 
+        context.copy(this.createContext(update));
         List<Method> methods = $.getMethods(classCache, Message.class);
 
         for (Method method : methods) {

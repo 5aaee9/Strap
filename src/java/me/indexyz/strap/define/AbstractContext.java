@@ -9,4 +9,11 @@ public class AbstractContext {
     public Update update;
     public Session session;
     public Configuration configuration;
+
+    public void copy(AbstractContext context) {
+        this.network = context.network;
+        this.update = context.update;
+        this.session = context.session;
+        this.configuration = context.configuration;
+    }
 }
