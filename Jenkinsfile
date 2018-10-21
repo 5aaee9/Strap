@@ -6,9 +6,11 @@ pipeline {
 
   }
   stages {
-    stage('') {
+    stage('error') {
       steps {
-        sh './gradlew build'
+        sh '''
+
+ls && chmod +x ./gradlew && ./gradlew build'''
         archiveArtifacts(artifacts: 'build/libs/*.jar', fingerprint: true)
       }
     }
