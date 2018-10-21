@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
 group 'me.indexyz.strap'
@@ -25,16 +26,41 @@ repositories {
     mavenCentral()
 }
 
+def deps = [
+    'org.json:json:20180813',
+    'com.google.guava:guava:26.0-jre',
+    'com.squareup.okhttp3:okhttp:3.11.0',
+    'com.google.code.gson:gson:2.8.5',
+    'org.apache.logging.log4j:log4j-api:2.11.1',
+    'org.apache.logging.log4j:log4j-core:2.11.1',
+    'com.squareup.okio:okio:1.14.0'
+]
 dependencies {
-    compile group: 'org.json', name: 'json', version: '20180813'
-    compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.11.0'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+    deps.each{
+        compile it
+    }
 }
 
 task run(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.main.runtimeClasspath
     main = 'me.indexyz.strap.Main'
 }
+
+shadowJar {
+    dependencies {
+        deps.each{
+            include dependency(it)
+        }
+    }
+    classifier = 'full'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'me.indexyz.strap.Main'
+        )
+    }
+}
+
+build.dependsOn(shadowJar)

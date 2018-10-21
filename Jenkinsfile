@@ -10,7 +10,7 @@ pipeline {
       steps {
         sh '''
 
-gradle build'''
+gradle shadowJar'''
         archiveArtifacts(artifacts: 'build/libs/*.jar', fingerprint: true)
       }
     }

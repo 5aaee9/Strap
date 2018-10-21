@@ -15,6 +15,8 @@ public class Main {
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("unable to find session provider"));
 
+        // load plugins from dir
+
         Bot bot = Bot.create(configuration.getConfigs().getProperty("botToken"), session);
 
         Bot.logger.info("Found events class number: " + $.getAnnotations(Events.class).size());
