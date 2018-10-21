@@ -79,8 +79,12 @@ public class Bot {
     }
 
     private void execUpdate(Update update) {
-        if (update.message != null && update.message.text != null && update.message.text.startsWith("/")) {
-            this.execer.execCommandUpdate(update);
+        if (update.message != null && update.message.text != null) {
+            if (update.message.text.startsWith("/")) {
+                this.execer.execCommandUpdate(update);
+            } else {
+                this.execer.execMessageEvent(update);
+            }
         }
 
         if (update.message != null && update.message.new_chat_members != null) {

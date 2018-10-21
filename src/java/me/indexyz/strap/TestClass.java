@@ -13,7 +13,6 @@ import java.util.Random;
 public class TestClass {
     @Command("start")
     public static void start(CommandContext context) {
-        System.out.println(context.update.message.text);
         context.network.sendMessage(context.update.message.chat.id, "Hello, World!");
     }
 

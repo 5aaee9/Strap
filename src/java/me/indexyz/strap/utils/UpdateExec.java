@@ -1,9 +1,6 @@
 package me.indexyz.strap.utils;
 
-import me.indexyz.strap.annotations.Command;
-import me.indexyz.strap.annotations.Events;
-import me.indexyz.strap.annotations.OnInit;
-import me.indexyz.strap.annotations.UserEvents;
+import me.indexyz.strap.annotations.*;
 import me.indexyz.strap.define.*;
 import me.indexyz.strap.object.Update;
 
@@ -36,13 +33,15 @@ public class UpdateExec {
 
     public void execCommandUpdate(Update update) {
         List<Method> methods = $.getMethods(classCache, Command.class);
+
+        CommandContext context = new CommandContext();
+        context.network = this.network;
+        context.update = update;
+        context.session = session;
+
         for (Method method : methods) {
             try {
                 Command command = method.getAnnotation(Command.class);
-                CommandContext context = new CommandContext();
-                context.network = this.network;
-                context.update = update;
-                context.session = session;
 
                 // not response in group
                 if (!command.responseInGroup() && !update.message.chat.type.equals(ChatType.PRIVATE)) {
@@ -80,6 +79,23 @@ public class UpdateExec {
                 if (command.value() == kind) {
                     method.invoke(null, context);
                 }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void execMessageEvent(Update update) {
+        MessageContext context = new MessageContext();
+        context.network = this.network;
+        context.update = update;
+        context.session = session;
+
+        List<Method> methods = $.getMethods(classCache, Message.class);
+
+        for (Method method : methods) {
+            try {
+                method.invoke(null, context);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }

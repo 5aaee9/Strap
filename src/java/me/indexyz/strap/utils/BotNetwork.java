@@ -73,7 +73,6 @@ public class BotNetwork {
         ArrayList<Update> returnList = Lists.newArrayList();
 
         resp.getJSONArray("result").forEach(item -> {
-            System.out.println(item.toString());
             returnList.add(gson.fromJson(item.toString(), Update.class));
         });
 
