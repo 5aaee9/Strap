@@ -10,12 +10,14 @@ import java.util.ServiceLoader;
 
 public class Main {
     public static void main(String[] args) {
+        $.init();
         Configuration configuration = Configuration.get();
         Session session = ServiceLoader.load(Session.class)
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("unable to find session provider"));
 
         // load plugins from dir
+        Engine.loadDir("plugins");
 
         Bot bot = Bot.create(configuration.getConfigs().getProperty("botToken"), session);
 
