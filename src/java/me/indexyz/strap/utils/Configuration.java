@@ -8,8 +8,17 @@ public class Configuration {
     private static final String CONFIG_NAME = "config.properties";
     private Properties configs;
 
-    public Configuration() {
+    private Configuration() {
         this.reload();
+    }
+    private static Configuration instance = null;
+
+    public static Configuration get() {
+        if (Configuration.instance == null) {
+            Configuration.instance = new Configuration();
+        }
+
+        return Configuration.instance;
     }
 
     private void reload() {
@@ -24,22 +33,30 @@ public class Configuration {
         }
     }
 
-    private void createDefault() {
-        Properties properties = new Properties();
-        properties.setProperty("botToken", "");
-
+    public void save() {
         try {
             FileWriter writer = new FileWriter(CONFIG_NAME);
             Date date = new Date();
-            properties.store(writer, "Strap bot config file");
+            this.configs.store(writer, "Strap bot config file");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void createDefault() {
+        var properties = new Properties();
+        properties.setProperty("botToken", "");
         configs = properties;
+
+        this.save();
     }
 
     public Properties getConfigs() {
         return configs;
+    }
+
+    public Configuration setConfigs(Properties properties) {
+        this.configs = properties;
+        return this;
     }
 }

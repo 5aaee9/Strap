@@ -4,11 +4,10 @@ import me.indexyz.strap.define.Session;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.Map;
+import java.util.HashMap;
 
 public class SessionImpl implements Session {
-    private static Map<String, JSONObject> sessionMapper = Collections.emptyMap();
+    private static HashMap<String, JSONObject> sessionMapper = new HashMap<String, JSONObject>();
 
     @Override
     @Nonnull

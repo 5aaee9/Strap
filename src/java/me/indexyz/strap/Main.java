@@ -10,7 +10,7 @@ import java.util.ServiceLoader;
 
 public class Main {
     public static void main(String[] args) {
-        Configuration configuration = new Configuration();
+        Configuration configuration = Configuration.get();
         Session session = ServiceLoader.load(Session.class)
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("unable to find session provider"));

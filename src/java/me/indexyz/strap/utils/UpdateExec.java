@@ -13,12 +13,25 @@ public class UpdateExec {
     private static List<Class<Events>> classCache;
     private BotNetwork network;
     private Session session;
+    private Configuration configuration;
 
     public UpdateExec(BotNetwork network, Session session) {
         classCache = $.getAnnotations(Events.class);
         this.network = network;
         this.session = session;
+        this.configuration = Configuration.get();
         this.onInit();
+    }
+
+    private AbstractContext createContext(Update update) {
+        var context = new AbstractContext();
+
+        context.network = network;
+        context.update = update;
+        context.session = session;
+        context.configuration = this.configuration;
+
+        return context;
     }
 
     private void onInit() {
@@ -34,10 +47,7 @@ public class UpdateExec {
     public void execCommandUpdate(Update update) {
         List<Method> methods = $.getMethods(classCache, Command.class);
 
-        CommandContext context = new CommandContext();
-        context.network = this.network;
-        context.update = update;
-        context.session = session;
+        CommandContext context = (CommandContext) this.createContext(update);
 
         for (Method method : methods) {
             try {
@@ -66,10 +76,7 @@ public class UpdateExec {
     }
 
     public void execUserEvent(Update update, UserEventsKind kind) {
-        UserEventContext context = new UserEventContext();
-        context.network = this.network;
-        context.update = update;
-        context.session = session;
+        UserEventContext context = (UserEventContext) this.createContext(update);
 
         List<Method> methods = $.getMethods(classCache, UserEvents.class);
         for (Method method : methods) {
@@ -86,10 +93,7 @@ public class UpdateExec {
     }
 
     public void execMessageEvent(Update update) {
-        MessageContext context = new MessageContext();
-        context.network = this.network;
-        context.update = update;
-        context.session = session;
+        MessageContext context = (MessageContext) this.createContext(update);
 
         List<Method> methods = $.getMethods(classCache, Message.class);
 
