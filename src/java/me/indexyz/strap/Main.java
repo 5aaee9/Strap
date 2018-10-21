@@ -11,12 +11,9 @@ import java.util.ServiceLoader;
 public class Main {
     public static void main(String[] args) {
         Configuration configuration = new Configuration();
-        Session session = Optional.of(
-                ServiceLoader.load(Session.class)
-                    .iterator()
-                    .next()
-            )
-            .orElseThrow(() -> new IllegalStateException("Cant found session provider"));
+        Session session = ServiceLoader.load(Session.class)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("unable to find session provider"));
 
         Bot bot = Bot.create(configuration.getConfigs().getProperty("botToken"), session);
 
