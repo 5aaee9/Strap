@@ -6,4 +6,5 @@ import me.indexyz.strap.utils.BotNetwork;
 public class AbstractContext {
     public BotNetwork network;
     public Update update;
+    public Session session;
 }

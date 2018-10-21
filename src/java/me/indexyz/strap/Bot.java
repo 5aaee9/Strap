@@ -1,5 +1,6 @@
 package me.indexyz.strap;
 
+import me.indexyz.strap.define.Session;
 import me.indexyz.strap.define.UserEventsKind;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.BotNetwork;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class Bot {
     private BotNetwork network;
-    private Boolean enabled;
+    private boolean enabled;
     private static Bot instance;
     private UpdateExec execer;
     public static final Logger logger = LogManager.getLogger(Bot.class);
@@ -31,18 +32,18 @@ public class Bot {
         return network;
     }
 
-    public void init(String token) {
+    public void init(String token, Session session) {
         this.network = new BotNetwork(token);
-        this.execer = new UpdateExec(this.network);
+        this.execer = new UpdateExec(this.network, session);
     }
 
-    public static Bot create(String token) {
+    public static Bot create(String token, Session session) {
         Bot.instance = new Bot();
-        Bot.instance.init(token);
+        Bot.instance.init(token, session);
         return get();
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

@@ -4,10 +4,7 @@ import me.indexyz.strap.annotations.Command;
 import me.indexyz.strap.annotations.Events;
 import me.indexyz.strap.annotations.OnInit;
 import me.indexyz.strap.annotations.UserEvents;
-import me.indexyz.strap.define.ChatType;
-import me.indexyz.strap.define.CommandContext;
-import me.indexyz.strap.define.UserEventContext;
-import me.indexyz.strap.define.UserEventsKind;
+import me.indexyz.strap.define.*;
 import me.indexyz.strap.object.Update;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,10 +15,12 @@ import java.util.List;
 public class UpdateExec {
     private static List<Class<Events>> classCache;
     private BotNetwork network;
+    private Session session;
 
-    public UpdateExec(BotNetwork network) {
+    public UpdateExec(BotNetwork network, Session session) {
         classCache = $.getAnnotations(Events.class);
         this.network = network;
+        this.session = session;
         this.onInit();
     }
 
@@ -43,6 +42,7 @@ public class UpdateExec {
                 CommandContext context = new CommandContext();
                 context.network = this.network;
                 context.update = update;
+                context.session = session;
 
                 // not response in group
                 if (!command.responseInGroup() && !update.message.chat.type.equals(ChatType.PRIVATE)) {
@@ -70,6 +70,7 @@ public class UpdateExec {
         UserEventContext context = new UserEventContext();
         context.network = this.network;
         context.update = update;
+        context.session = session;
 
         List<Method> methods = $.getMethods(classCache, UserEvents.class);
         for (Method method : methods) {
