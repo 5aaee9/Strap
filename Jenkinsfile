@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'openjdk:11-jdk'
+      image 'gradle:4.10.2-jdk11'
     }
 
   }
@@ -10,7 +10,7 @@ pipeline {
       steps {
         sh '''
 
-ls && chmod +x ./gradlew && ./gradlew build'''
+gradle build'''
         archiveArtifacts(artifacts: 'build/libs/*.jar', fingerprint: true)
       }
     }
