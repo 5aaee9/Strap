@@ -112,7 +112,7 @@ public class BotNetwork {
         return sendMessage(chatId, text, "Markdown", false, false, null);
     }
 
-    public <T> void kickChatMe(T chatId, long userId, long untilDate) {
+    public <T> void kickChatMember(T chatId, long userId, long untilDate) {
         JSONObject object = new JSONObject();
         object.put("chat_id", chatId);
         object.put("user_id", userId);
@@ -121,8 +121,8 @@ public class BotNetwork {
         sendReq("/kickChatMember", createFromJson(object));
     }
 
-    public <T> void kickChatMe(T chatId, long userId) {
-        kickChatMe(chatId, userId, 0);
+    public <T> void kickChatMember(T chatId, long userId) {
+        kickChatMember(chatId, userId, 0);
     }
 
     public <T> void unbanChatMember(T chatId, long userId) {
