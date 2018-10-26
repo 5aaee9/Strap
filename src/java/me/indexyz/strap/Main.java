@@ -12,14 +12,15 @@ public class Main {
     public static void main(String[] args) {
         $.init();
         Configuration configuration = Configuration.get();
-        Session session = ServiceLoader.load(Session.class)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("unable to find session provider"));
 
         // load plugins from dir
         Engine.loadDir("plugins");
 
-        Bot bot = Bot.create(configuration.getConfigs().getProperty("botToken"), session);
+        Session session = ServiceLoader.load(Session.class)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("unable to find session provider"));
+        
+        Bot bot = Bot.create(configuration.get("botToken"), session);
 
         Bot.logger.info("Found events class number: " + $.getAnnotations(Events.class).size());
         Bot.logger.info("Starting bot");

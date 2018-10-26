@@ -51,12 +51,23 @@ public class Configuration {
         this.save();
     }
 
-    public Properties getConfigs() {
-        return configs;
+    public String get(String key) {
+        var envs = System.getProperties();
+        if (envs.containsKey(key.toUpperCase())) {
+            return envs.getProperty(key.toUpperCase());
+        }
+        return configs.getProperty(key);
     }
 
-    public Configuration setConfigs(Properties properties) {
-        this.configs = properties;
-        return this;
+    public boolean has(String key) {
+        var envs = System.getProperties();
+        if (envs.containsKey(key.toUpperCase())) {
+            return true;
+        }
+        return configs.containsKey(key);
+    }
+
+    public void set(String key, String value) {
+        configs.setProperty(key, value);
     }
 }
