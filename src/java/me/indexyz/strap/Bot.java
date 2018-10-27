@@ -2,6 +2,7 @@ package me.indexyz.strap;
 
 import me.indexyz.strap.define.Session;
 import me.indexyz.strap.define.UserEventsKind;
+import me.indexyz.strap.exceptions.UpdateFailure;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.BotNetwork;
 import me.indexyz.strap.utils.UpdateExec;
@@ -72,6 +73,8 @@ public class Bot {
                             }).start();
                         });
                 Thread.sleep(1000);
+            } catch (UpdateFailure e) {
+                logger.info("update failure, check your bot token");
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -2,6 +2,8 @@ package me.indexyz.strap.utils;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import me.indexyz.strap.Bot;
+import me.indexyz.strap.exceptions.UpdateFailure;
 import me.indexyz.strap.object.Message;
 import me.indexyz.strap.object.Update;
 import okhttp3.*;
@@ -40,10 +42,13 @@ public class BotNetwork {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-    public static final String ERROR_RESPONSE = "{\"ok\": false}";
     private static OkHttpClient client = new OkHttpClient();
 
-    public String sendReq(String path, RequestBody body) {
+    private JSONObject sendReq(String path, RequestBody body) {
+        return sendReq(path, body, 0);
+    }
+
+    private JSONObject sendReq(String path, RequestBody body, int depth) {
         Request request = new Request.Builder()
                 .url(getRequestUrl(path))
                 .header("Content-Type", "application/json")
@@ -51,25 +56,34 @@ public class BotNetwork {
                 .build();
 
         try {
-            Response response = client.newCall(request).execute();
-            return response.body().string();
+            if (depth < 5) {
+                Response response = client.newCall(request).execute();
+                assert response.body() != null;
+                var respBody = response.body().string();
+
+                response.close();
+                var object = new JSONObject(respBody);
+
+                if (!object.getBoolean("ok") && object.has("result")) {
+                    Bot.logger.info(respBody);
+                    return sendReq(path, body, depth + 1);
+                }
+
+                return object;
+            } else {
+                throw new UpdateFailure();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            return ERROR_RESPONSE;
+            throw new UpdateFailure();
         }
     }
 
     @Nullable
     public ArrayList<Update> getUpdates(long id) {
-        String result = sendReq("/getUpdates", createFromJson((new JSONObject()).put("offset", id)));
-
-        JSONObject resp = new JSONObject(result);
-        if (!resp.getBoolean("ok")) {
-            return null;
-        }
+        var resp = sendReq("/getUpdates", createFromJson((new JSONObject()).put("offset", id)));
 
         Gson gson = this.getGson();
-
         ArrayList<Update> returnList = Lists.newArrayList();
 
         resp.getJSONArray("result").forEach(item -> {
@@ -92,7 +106,7 @@ public class BotNetwork {
         object.put("disable_notification", disableNotification);
         object.put("reply_to_message_id", replyToMessage_id);
 
-        JSONObject resp = new JSONObject(sendReq("/sendMessage", createFromJson(object)));
+        var resp = sendReq("/sendMessage", createFromJson(object));
         return this.getGson().fromJson(resp.getJSONObject("result").toString(), Message.class);
     }
 
