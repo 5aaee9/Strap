@@ -10,7 +10,6 @@ import java.util.ServiceLoader;
 
 public class Main {
     public static void main(String[] args) {
-        $.init();
         Configuration configuration = Configuration.get();
 
         // load plugins from dir

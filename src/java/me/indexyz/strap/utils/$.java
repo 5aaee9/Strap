@@ -1,10 +1,6 @@
 package me.indexyz.strap.utils;
 
 import com.google.common.collect.Lists;
-import com.google.common.reflect.ClassPath;
-import me.indexyz.strap.Bot;
-
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -19,35 +15,6 @@ public class $ {
     };
 
     private static ArrayList<Class> classes = Lists.newArrayList();
-
-    public static void init() {
-        ArrayList<ClassPath.ClassInfo> ret = Lists.newArrayList();
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            classLoop:
-            for (final ClassPath.ClassInfo info : ClassPath.from(loader).getAllClasses()) {
-                for (final String prefix : $.DISABLE_CLASS_PREFIX) {
-                    if (info.getPackageName().startsWith(prefix)) {
-                        continue classLoop;
-                    }
-                }
-
-                if (info.getPackageName().startsWith("me.indexyz.telegram")) {
-                    Bot.logger.info(info.getPackageName());
-                }
-
-
-                try {
-                    $.classes.add(info.load());
-                } catch (Throwable e) {
-                    continue ;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void addClass(Class clazz) {
         $.classes.add(clazz);
