@@ -1,8 +1,6 @@
 package me.indexyz.strap;
 
 
-import me.indexyz.strap.utils.$;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

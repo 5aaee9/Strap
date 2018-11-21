@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import me.indexyz.strap.Bot;
 import me.indexyz.strap.exceptions.UpdateFailure;
-import me.indexyz.strap.object.Message;
 import me.indexyz.strap.object.Update;
 import okhttp3.*;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -157,7 +155,4 @@ public class BotNetwork {
         }
     }
 
-//    public Message sendDocument(String chatId, Path document, Path thumb, String caption, String parse_mode, ) {
-//        return null;
-//    }
 }

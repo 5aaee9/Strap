@@ -5,7 +5,6 @@ import me.indexyz.strap.define.UserEventsKind;
 import me.indexyz.strap.exceptions.UpdateFailure;
 import me.indexyz.strap.object.Update;
 import me.indexyz.strap.utils.BotNetwork;
-import me.indexyz.strap.utils.UpdateExec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
