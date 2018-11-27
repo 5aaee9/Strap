@@ -60,11 +60,11 @@ class Network(private val token: String) {
 
                 return `object`
             } else {
-                throw UpdateFailure()
+                throw UpdateFailure("Max retry update times executed")
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            throw UpdateFailure()
+            throw UpdateFailure("Request get IOException")
         }
 
     }

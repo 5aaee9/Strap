@@ -3,18 +3,18 @@ package me.indexyz.strap.utils
 import me.indexyz.strap.Annotations
 import me.indexyz.strap.`object`.Update
 import me.indexyz.strap.define.*
+import me.indexyz.strap.define.context.AbstractContext
+import me.indexyz.strap.define.context.CommandContext
+import me.indexyz.strap.define.context.MessageContext
+import me.indexyz.strap.define.context.UserEventContext
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
-public class UpdateExec {
+public class UpdateExec(private val network: Network, private val session: Session) {
     private val classCache = findAnnotations(Annotations.Events::class.java)
-    private val network: BotNetwork
-    private val session: Session
     private val configuration: Configuration
 
-    constructor(network: BotNetwork, session: Session) {
-        this.network = network
-        this.session = session
+    init {
         this.configuration = Configuration.get()
         this.onInit()
     }
@@ -32,12 +32,7 @@ public class UpdateExec {
     }
 
     private fun createContext(update: Update): AbstractContext {
-        val context = AbstractContext()
-
-        context.network = network
-        context.update = update
-        context.session = session
-        context.configuration = this.configuration
+        val context = AbstractContext(network, update, this.configuration)
 
         return context
     }
@@ -45,8 +40,9 @@ public class UpdateExec {
     fun execCommandUpdate(update: Update) {
         val methods = findMethods(classCache, Annotations.Message.Command::class.java)
 
-        val context = CommandContext()
-        context.copy(this.createContext(update))
+        val context: CommandContext = CommandContext(network = network,
+                update = update, configuration = configuration,
+                args = Optional.empty())
 
         methods.forEach {
             try {
@@ -54,16 +50,16 @@ public class UpdateExec {
 
 
                 // not response in group
-                if (!command.responseInGroup && update.message.chat.type != ChatType.PRIVATE) {
+                if (!command.responseInGroup && update.message.chat!!.type != ChatType.PRIVATE.type) {
                     return
                 }
 
-                if (update.message.text.startsWith("/" + command.command)) {
+                if (update.message.text!!.startsWith("/" + command.command)) {
                     if (command.parseArgs) {
-                        val args = Arrays.asList(*update.message.text.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+                        val args = Arrays.asList(*update.message.text!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
 
                         if (args.size > 1) {
-                            context.args = args.subList(1, args.size)
+                            context.args = Optional.of(args.subList(1, args.size))
                         }
                     }
 
@@ -77,8 +73,9 @@ public class UpdateExec {
     }
 
     fun execUserEvent(update: Update, kind: UserEventsKind) {
-        val context = UserEventContext()
-        context.copy(this.createContext(update))
+        val context = UserEventContext(
+                network, update, configuration
+        )
 
         val methods = findMethods(classCache, Annotations.Message.UserEvents::class.java)
         methods.forEach {
@@ -98,9 +95,8 @@ public class UpdateExec {
     }
 
     fun execMessageEvent(update: Update) {
-        val context = MessageContext()
+        val context = MessageContext(network, update, configuration)
 
-        context.copy(this.createContext(update))
         val methods = findMethods(classCache, Annotations.Message::class.java)
 
         for (method in methods) {

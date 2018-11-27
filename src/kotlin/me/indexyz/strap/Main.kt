@@ -2,6 +2,7 @@ package me.indexyz.strap
 
 import me.indexyz.strap.define.Session
 import me.indexyz.strap.utils.Configuration
+import me.indexyz.strap.utils.DirClassLoader
 import me.indexyz.strap.utils.findAnnotations
 import java.util.*
 
@@ -9,7 +10,8 @@ fun main() {
     val configuration = Configuration.get()
 
     // load plugins from dir
-    Engine.loadDir("plugins")
+    val loader = DirClassLoader()
+    loader.loadDir("plugins")
 
     val session = ServiceLoader.load(Session::class.java)
             .findFirst()

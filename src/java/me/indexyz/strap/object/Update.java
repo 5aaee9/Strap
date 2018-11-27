@@ -1,5 +1,7 @@
 package me.indexyz.strap.object;
 
+import me.indexyz.strap.objects.Message;
+
 public class Update {
     public long update_id;
     public Message message;
