@@ -1,4 +1,6 @@
 # Strap
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FIndexyz%2FStrap.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FIndexyz%2FStrap?ref=badge_shield)
+
 Yet, another Telegram Bot Framework
 
 [![](https://jitpack.io/v/Indexyz/Strap.svg)](https://jitpack.io/#Indexyz/Strap)
@@ -36,3 +38,6 @@ dependencies {
     implementation 'com.github.Indexyz:Strap:master-SNAPSHOT'
 }
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FIndexyz%2FStrap.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FIndexyz%2FStrap?ref=badge_large)
