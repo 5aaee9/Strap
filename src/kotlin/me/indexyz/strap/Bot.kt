@@ -1,10 +1,9 @@
 package me.indexyz.strap
 
-import me.indexyz.strap.`object`.Update
 import me.indexyz.strap.define.Session
 import me.indexyz.strap.define.UserEventsKind
+import me.indexyz.strap.define.telegram.Update
 import me.indexyz.strap.exceptions.UpdateFailure
-import me.indexyz.strap.utils.Configuration
 import me.indexyz.strap.utils.Network
 import me.indexyz.strap.utils.UpdateExec
 import org.apache.logging.log4j.LogManager
@@ -64,11 +63,11 @@ class Bot {
                     continue
                 }
 
-                if (updates!!.size != 0) {
-                    lastUpdateId = updates!!.get(updates!!.size - 1).update_id + 1
+                if (updates.size != 0) {
+                    lastUpdateId = updates.get(updates.size - 1).update_id + 1
                 }
 
-                updates!!.stream()
+                updates.stream()
                         .forEach { update -> Thread { this.execUpdate(update) }.start() }
                 Thread.sleep(1000)
             } catch (e: UpdateFailure) {
@@ -81,15 +80,13 @@ class Bot {
     }
 
     private fun execUpdate(update: Update) {
-        if (update.message != null && update.message.text != null) {
-            if (update.message.text!!.startsWith("/")) {
-                this.execer!!.execCommandUpdate(update)
-            } else {
-                this.execer!!.execMessageEvent(update)
-            }
+        if (update.message?.text != null) if (update.message.text.startsWith("/")) {
+            this.execer!!.execCommandUpdate(update)
+        } else {
+            this.execer!!.execMessageEvent(update)
         }
 
-        if (update.message != null && update.message.new_chat_members != null) {
+        if (update.message?.new_chat_members != null) {
             this.execer!!.execUserEvent(update, UserEventsKind.JOIN_CHAT)
         }
     }

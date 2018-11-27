@@ -4,7 +4,7 @@ import com.google.common.collect.Lists
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import me.indexyz.strap.Bot
-import me.indexyz.strap.`object`.Update
+import me.indexyz.strap.define.telegram.Update
 import me.indexyz.strap.exceptions.UpdateFailure
 import me.indexyz.strap.objects.Message
 import okhttp3.MediaType

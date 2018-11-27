@@ -1,12 +1,12 @@
 package me.indexyz.strap.utils
 
 import me.indexyz.strap.Annotations
-import me.indexyz.strap.`object`.Update
 import me.indexyz.strap.define.*
 import me.indexyz.strap.define.context.AbstractContext
 import me.indexyz.strap.define.context.CommandContext
 import me.indexyz.strap.define.context.MessageContext
 import me.indexyz.strap.define.context.UserEventContext
+import me.indexyz.strap.define.telegram.Update
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
@@ -50,11 +50,11 @@ public class UpdateExec(private val network: Network, private val session: Sessi
 
 
                 // not response in group
-                if (!command.responseInGroup && update.message.chat!!.type != ChatType.PRIVATE.type) {
+                if (!command.responseInGroup && update.message!!.chat.type != ChatType.PRIVATE.type) {
                     return
                 }
 
-                if (update.message.text!!.startsWith("/" + command.command)) {
+                if (update.message!!.text!!.startsWith("/" + command.command)) {
                     if (command.parseArgs) {
                         val args = Arrays.asList(*update.message.text!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
 
