@@ -1,8 +1,7 @@
 # Strap
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FIndexyz%2FStrap.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FIndexyz%2FStrap?ref=badge_shield)
-
 Yet, another Telegram Bot Framework
 
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FIndexyz%2FStrap.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FIndexyz%2FStrap?ref=badge_shield)
 [![](https://jitpack.io/v/Indexyz/Strap.svg)](https://jitpack.io/#Indexyz/Strap)
 
 ## Create First Plugin
